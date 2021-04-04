@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * This class is used in the project to provide JWT token after successful authentication
  */
-public class JwtTokenProvider {
+public class  JwtTokenProvider {
     private static final String TOKEN_ISSUER = "https://quora.io";
 
     private final Algorithm algorithm;
