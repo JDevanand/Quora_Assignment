@@ -1,20 +1,21 @@
 package com.upgrad.quora.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.AuthenticationService;
 import com.upgrad.quora.service.business.QuestionBusinessService;
 import com.upgrad.quora.service.entity.QuestionEntity;
-import com.upgrad.quora.service.entity.UserAuthTokenEntity;
-import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -43,16 +44,19 @@ public class QuestionController {
 
     //Get all questions
     @RequestMapping(path="question/all",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionDetailsResponse> getAllQuestions(@RequestHeader("authorization") final String accessToken){
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String accessToken) throws JsonProcessingException, AuthorizationFailedException {
 
-        List<QuestionEntity> questionEntities = questionBusinessService.getAllQuestions();
-        QuestionDetailsResponse questionDetailsResponse = new QuestionDetailsResponse();
-        for (QuestionEntity questionEntity:questionEntities) {
-            questionDetailsResponse.setId(questionEntity.getUuid());
-            questionDetailsResponse.setContent(questionEntity.getContent());
+        List<QuestionEntity> questionEntities = questionBusinessService.getAllQuestions(accessToken);
+        List<QuestionDetailsResponse> questionDetailsResponse = new ArrayList<>();
+
+        for (QuestionEntity questionEntity : questionEntities) {
+            QuestionDetailsResponse qdr = new QuestionDetailsResponse();
+            qdr.setId(questionEntity.getUuid());
+            qdr.setContent(questionEntity.getContent());
+            questionDetailsResponse.add(qdr);
         }
 
-        return new ResponseEntity<QuestionDetailsResponse>(questionDetailsResponse,HttpStatus.OK);
+        return new ResponseEntity<>(questionDetailsResponse, HttpStatus.OK);
     }
 
     //edit question
@@ -83,24 +87,18 @@ public class QuestionController {
 
    //Get question by userid
     @RequestMapping(path="question/all/{userId}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionResponse> getQuestionByUserid(@RequestHeader("authorization") String accessToken, @PathVariable("userId") String uuid) throws AuthenticationFailedException {
+    public ResponseEntity<List<QuestionDetailsResponse>> getQuestionByUserid(@RequestHeader("authorization") String accessToken, @PathVariable("userId") String userUuid) throws AuthenticationFailedException, AuthorizationFailedException, UserNotFoundException {
 
-            UserAuthTokenEntity userAuthToken = authenticationService.authenticate(accessToken);
-            UserEntity loggedUser = userAuthToken.getUser();
+        List<QuestionEntity> questionEntities = questionBusinessService.getQuestionbyUserId(accessToken, userUuid);
+        List<QuestionDetailsResponse> questionDetailsResponse = new ArrayList<QuestionDetailsResponse>();
 
-            if(uuid.equals(loggedUser.getUuid())) {
-                List<QuestionEntity> questionEntities = questionBusinessService.getQuestionbyUserId(uuid);
+        for (QuestionEntity questionEntity:questionEntities) {
+            QuestionDetailsResponse qdr = new QuestionDetailsResponse();
+            qdr.setId(questionEntity.getUuid());
+            qdr.setContent(questionEntity.getContent());
+            questionDetailsResponse.add(qdr);
+        }
 
-
-                QuestionResponse questionResponse = new QuestionResponse();
-                //questionResponse.setId();
-                //questionResponse.setStatus();
-
-                //return the question data to response entity
-                return new ResponseEntity<>(questionResponse, HttpStatus.OK);
-            } else {
-                return null;
-            }
+        return new ResponseEntity<>(questionDetailsResponse, HttpStatus.OK);
     }
-
 }

@@ -50,11 +50,7 @@ public class AnswerBusinessService {
         return answerDao.getAnswerByQuestionId(questionUuid);
     }
 
-    public AnswerEntity getAnswerById(final String answerUuid){
 
-        return answerDao.getAnswerById(answerUuid);
-
-    }
     //Create answer
     public AnswerEntity createAnswer(String accessToken,String questionUuid, String answerContent) throws AuthorizationFailedException, InvalidQuestionException {
 

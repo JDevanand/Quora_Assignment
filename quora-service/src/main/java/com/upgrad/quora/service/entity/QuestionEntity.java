@@ -17,11 +17,12 @@ import java.util.Date;
 @Table(name="question")
 @NamedQueries(
         {
-        @NamedQuery(name = "questionByUserId" , query = "select q from QuestionEntity q where q.user.uuid = :id"),
+        @NamedQuery(name = "questionByUserId" , query = "select q from QuestionEntity q where q.user.uuid = :useruuid"),
                 @NamedQuery(name = "questionByQuestionId" , query = "select q from QuestionEntity q where q.uuid = :id"),
         @NamedQuery(name="getAllQuestions", query = "select q from QuestionEntity q")
         }
 )
+
 public class QuestionEntity implements Serializable {
 
     @Id

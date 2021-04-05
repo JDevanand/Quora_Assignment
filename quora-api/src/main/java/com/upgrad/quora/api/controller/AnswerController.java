@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -65,15 +66,20 @@ public class AnswerController {
 
     //All the answer to a question
     @RequestMapping(path="/answer/all/{questionId}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<AnswerDetailsResponse> getAllAnswerToQuestion(@PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
+    public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswerToQuestion(@PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
 
         List<AnswerEntity> answerEntityList = answerBusinessService.getAnswerByQuestionId(accessToken, questionUuid);
+        List<AnswerDetailsResponse> answerDetailsResponses = new ArrayList<>();
 
-        AnswerDetailsResponse answerDetailsResponse = new AnswerDetailsResponse();
-        //answerDetailsResponse.setAnswerContent(answerEntityList);
+        for(AnswerEntity answerEntity : answerEntityList){
+            AnswerDetailsResponse adr = new AnswerDetailsResponse();
+            adr.setId(answerEntity.getUuid());
+            adr.setQuestionContent(answerEntity.getQuestion().getContent());
+            adr.setAnswerContent(answerEntity.getAnswer());
+            answerDetailsResponses.add(adr);
+        }
 
-
-        return  new ResponseEntity<>(answerDetailsResponse, HttpStatus.OK);
+        return  new ResponseEntity<>(answerDetailsResponses, HttpStatus.OK);
     }
 
 }
