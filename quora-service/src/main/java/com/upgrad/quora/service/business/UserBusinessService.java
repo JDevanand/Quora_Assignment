@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.business;
 
+import com.upgrad.quora.service.dao.UserAuthDao;
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
@@ -18,12 +19,16 @@ public class UserBusinessService {
     private UserDao userDao;
 
     @Autowired
+    private UserAuthDao userAuthDao;
+
+    @Autowired
     private PasswordCryptographyProvider cryptographyProvider;
 
     @Autowired
     private AuthenticationService authenticationService;
 
-    //Logic to create user
+    //Create a new user
+    //Throws exception if user name or email id is already registered.
     public UserEntity createUser(UserEntity userEntity) throws SignUpRestrictedException{
         String password = userEntity.getPassword();
         if(password == null){
@@ -51,21 +56,21 @@ public class UserBusinessService {
         return userDao.createUser(userEntity);
     }
 
-    //Logic to check and sign-in user
+    //User sign in after Basic authentication
     public UserAuthTokenEntity userSignIn(final String authorization) throws AuthenticationFailedException {
 
         return authenticationService.authenticate(authorization);
 
     }
 
-    //User sign out
+    //User sign out after bearer authentication using access token
     public UserAuthTokenEntity userSignOut(final String accessToken) throws SignOutRestrictedException {
 
-        UserAuthTokenEntity loggedUserAuthTokenEntity = userDao.getUserAuthToken(accessToken);
+        UserAuthTokenEntity loggedUserAuthTokenEntity = userAuthDao.getUserAuthToken(accessToken);
         if(loggedUserAuthTokenEntity ==null){
             throw new SignOutRestrictedException("SGR-001","User is not Signed in"); // found issue.. yet to be completed
         }
         loggedUserAuthTokenEntity.setLogoutAt(ZonedDateTime.now());
-        return userDao.userSignOut(loggedUserAuthTokenEntity);
+        return userAuthDao.userSignOut(loggedUserAuthTokenEntity);
     }
 }

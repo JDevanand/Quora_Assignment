@@ -35,39 +35,56 @@ public class RestExceptionHandler {
     @ExceptionHandler(AuthorizationFailedException.class)
     public ResponseEntity<ErrorResponse> authorizationFailedException(AuthorizationFailedException exe, WebRequest request){
 
+        if(exe.getCode().equals("ATHR-003"))
+            return new ResponseEntity<ErrorResponse>(
+                    new ErrorResponse().code(exe.getCode()).message((exe.getErrorMessage())), HttpStatus.UNAUTHORIZED
+            );
+
         return new ResponseEntity<ErrorResponse>(
-                new ErrorResponse().code(exe.getCode()).message((exe.getErrorMessage())), HttpStatus.UNAUTHORIZED
-        );
+                    new ErrorResponse().code(exe.getCode()).message((exe.getErrorMessage())), HttpStatus.FORBIDDEN
+            );
     }
 
 
     @ExceptionHandler(InvalidQuestionException.class)
     public ResponseEntity<ErrorResponse> invalidQuestionException(InvalidQuestionException exe, WebRequest request){
 
+        /*ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setCode(exe.getCode());
+        errorResponse.setMessage(exe.getErrorMessage());
+        */
+
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getCode()).message((exe.getErrorMessage())), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(SignOutRestrictedException.class)
+    public ResponseEntity<ErrorResponse> signOutRestrictedException(SignOutRestrictedException exe, WebRequest request){
+        /*
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(exe.getCode());
         errorResponse.setMessage(exe.getErrorMessage());
-        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
+        */
 
+        return new ResponseEntity<>(new ErrorResponse().code(exe.getCode()).message((exe.getErrorMessage())),HttpStatus.UNAUTHORIZED);
     }
-
 
     @ExceptionHandler(SignUpRestrictedException.class)
     public ResponseEntity<ErrorResponse> signUpRestrictedException(SignUpRestrictedException exe, WebRequest request) {
-
+        /*
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(exe.getCode());
         errorResponse.setMessage(exe.getErrorMessage());
-        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.FORBIDDEN);
+        */
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getCode()).message((exe.getErrorMessage())), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> userNotFoundException(UserNotFoundException exe, WebRequest request){
-
+        /*
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(exe.getCode());
         errorResponse.setMessage(exe.getErrorMessage());
-        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
-
+        */
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getCode()).message((exe.getErrorMessage())), HttpStatus.NOT_FOUND);
     }
 }

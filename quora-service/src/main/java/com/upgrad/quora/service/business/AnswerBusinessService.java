@@ -3,6 +3,7 @@ package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.AnswerDao;
 import com.upgrad.quora.service.dao.QuestionDao;
+import com.upgrad.quora.service.dao.UserAuthDao;
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.entity.QuestionEntity;
@@ -29,12 +30,15 @@ public class AnswerBusinessService {
     private UserDao userDao;
 
     @Autowired
+    private UserAuthDao userAuthDao;
+
+    @Autowired
     private QuestionDao questionDao;
 
     //Get all answers to a question
     public List<AnswerEntity> getAnswerByQuestionId(final String accessToken, String questionUuid) throws AuthorizationFailedException, InvalidQuestionException {
 
-        UserAuthTokenEntity loggedUserAuthTokenEntity = userDao.getUserAuthToken(accessToken);
+        UserAuthTokenEntity loggedUserAuthTokenEntity = userAuthDao.getUserAuthToken(accessToken);
         if(loggedUserAuthTokenEntity ==null){
             throw new AuthorizationFailedException("ATHR-001","User has not signed in");
         }
@@ -51,10 +55,10 @@ public class AnswerBusinessService {
     }
 
 
-    //Create answer
+    //Create answer to a question after bearer authentication
     public AnswerEntity createAnswer(String accessToken,String questionUuid, String answerContent) throws AuthorizationFailedException, InvalidQuestionException {
 
-        UserAuthTokenEntity loggedUserAuthTokenEntity = userDao.getUserAuthToken(accessToken);
+        UserAuthTokenEntity loggedUserAuthTokenEntity = userAuthDao.getUserAuthToken(accessToken);
         if(loggedUserAuthTokenEntity ==null){
             throw new AuthorizationFailedException("ATHR-001","User has not signed in");
         }
@@ -77,10 +81,10 @@ public class AnswerBusinessService {
         return answerDao.createAnswer(answerEntity);
     }
 
-    //edit answer
+    //Edit answer only by the answer owner and after bearer authentication
     public AnswerEntity editAnswer(String accessToken,String answerUuid, String updatedAnswerContent) throws AuthorizationFailedException, AnswerNotFoundException {
 
-        UserAuthTokenEntity loggedUserAuthTokenEntity = userDao.getUserAuthToken(accessToken);
+        UserAuthTokenEntity loggedUserAuthTokenEntity = userAuthDao.getUserAuthToken(accessToken);
 
         if(loggedUserAuthTokenEntity ==null){
             throw new AuthorizationFailedException("ATHR-001","User has not signed in");
@@ -104,9 +108,9 @@ public class AnswerBusinessService {
         return answerDao.updateAnswer(answerEntityToBeUpdated);
     }
 
-    //delete answer
+    //Delete answer allowed only to admin or the answer owner
     public AnswerEntity deleteAnswer(String accessToken, String answerUuid) throws AuthorizationFailedException, AnswerNotFoundException {
-        UserAuthTokenEntity loggedUserAuthTokenEntity = userDao.getUserAuthToken(accessToken);
+        UserAuthTokenEntity loggedUserAuthTokenEntity = userAuthDao.getUserAuthToken(accessToken);
 
         if(loggedUserAuthTokenEntity ==null){
             throw new AuthorizationFailedException("ATHR-001","User has not signed in");

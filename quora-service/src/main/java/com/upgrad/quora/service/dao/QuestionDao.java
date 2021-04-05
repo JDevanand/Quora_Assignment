@@ -13,25 +13,23 @@ import java.util.List;
 @Repository
 public class QuestionDao {
 
-    //Autowired - is application managed entity manager in MVC framework
-    //Persistence context is container managed entity manager and is different from mvc
     @PersistenceContext
     private EntityManager entityManager;
 
-    //create
+    //create a question entity in database
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity createQuestion(QuestionEntity questionEntity){
         entityManager.persist(questionEntity);
         return questionEntity;
     }
 
-    //get all questions
+    //get all questions from database
     public List<QuestionEntity> getAllQuestions(){
 
         return entityManager.createNamedQuery("getAllQuestions",QuestionEntity.class).getResultList();
     }
 
-    //get question by question id
+    //get a specific question by question id
     public QuestionEntity getQuestionByQuestionId(final String questionId){
         try {
             return entityManager.createNamedQuery("questionByQuestionId", QuestionEntity.class).setParameter("id", questionId)
@@ -41,7 +39,7 @@ public class QuestionDao {
         }
     }
 
-    //get  questions by UserId
+    //get all questions posted by a user based on UserId
     public List<QuestionEntity> getQuestionByUserId(String userUuid) {
         try {
             List<QuestionEntity> questionEntities = entityManager.createNamedQuery("questionByUserId", QuestionEntity.class).setParameter("useruuid", userUuid)
@@ -52,7 +50,7 @@ public class QuestionDao {
         }
     }
 
-    //delete
+    //delete a question
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity deleteQuestion(QuestionEntity questionEntity) {
         try {

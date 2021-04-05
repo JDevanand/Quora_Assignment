@@ -24,7 +24,7 @@ public class AnswerController {
     @Autowired
     private AnswerBusinessService answerBusinessService;
 
-    //Create answer
+    //Create answer endpoint with bearer authentication
     @RequestMapping(path ="/question/{questionId}/answer/create",method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AnswerResponse> createAnswer(@RequestBody final AnswerRequest answerRequest, @PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String accessToken) throws InvalidQuestionException, AuthenticationFailedException, AuthorizationFailedException {
 
@@ -38,7 +38,7 @@ public class AnswerController {
         return new ResponseEntity<AnswerResponse>(answerResponse, HttpStatus.CREATED);
     }
 
-    //Edit answer
+    //Edit answer endpoint with bearer authentication
     @RequestMapping(path="/answer/edit/{answerId}",method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AnswerEditResponse> editAnswer(@PathVariable("answerId") String answerUuid, @RequestHeader("authorization")final String accessToken, @RequestBody AnswerEditRequest answerEditRequest) throws AuthorizationFailedException, AnswerNotFoundException {
 
@@ -51,7 +51,7 @@ public class AnswerController {
         return new ResponseEntity<AnswerEditResponse>(answerEditResponse, HttpStatus.OK);
     }
 
-    //Delete answer
+    //Delete answer endpoint with bearer authentication
     @RequestMapping(path="/answer/delete/{answerId}",method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AnswerDeleteResponse> deleteAnswer(@PathVariable("answerId") String answerUuid, @RequestHeader("authorization")final String accessToken) throws AuthenticationFailedException, AuthorizationFailedException, AnswerNotFoundException {
 
@@ -64,7 +64,7 @@ public class AnswerController {
         return  new ResponseEntity<AnswerDeleteResponse>(answerDeleteResponse,HttpStatus.OK);
     }
 
-    //All the answer to a question
+    //Get All the answer to a question endpoint with bearer authentication
     @RequestMapping(path="/answer/all/{questionId}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswerToQuestion(@PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
 

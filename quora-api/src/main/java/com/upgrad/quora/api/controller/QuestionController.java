@@ -28,7 +28,7 @@ public class QuestionController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    //Create question
+    //Create question endpoint
     @RequestMapping(path="question/create",method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String accessToken, final QuestionRequest questionRequest) throws AuthorizationFailedException {
 
@@ -42,7 +42,7 @@ public class QuestionController {
         return new ResponseEntity<QuestionResponse>(questionResponse, HttpStatus.OK);
     }
 
-    //Get all questions
+    //Get all questions endpoint
     @RequestMapping(path="question/all",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String accessToken) throws JsonProcessingException, AuthorizationFailedException {
 
@@ -59,7 +59,7 @@ public class QuestionController {
         return new ResponseEntity<>(questionDetailsResponse, HttpStatus.OK);
     }
 
-    //edit question
+    //Edit question endpoint
    @RequestMapping(path="/question/edit/{questionId}",method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
    public ResponseEntity<QuestionEditResponse> editQuestion(@RequestHeader("authorization") final String accessToken, @PathVariable("questionId") final String questionUuid, final QuestionEditRequest questionEditRequest) throws AuthorizationFailedException, InvalidQuestionException {
 
@@ -72,7 +72,7 @@ public class QuestionController {
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse,HttpStatus.OK);
    }
 
-   //delete question
+   //Delete question endpoint
    @RequestMapping(path="/question/delete/{questionId}",method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@RequestHeader("authorization") final String accessToken, @PathVariable("questionId") final String questionUuid) throws AuthorizationFailedException, InvalidQuestionException {
 
@@ -85,7 +85,7 @@ public class QuestionController {
         return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse,HttpStatus.OK);
    }
 
-   //Get question by userid
+   //Get question by userid endpoint
     @RequestMapping(path="question/all/{userId}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getQuestionByUserid(@RequestHeader("authorization") String accessToken, @PathVariable("userId") String userUuid) throws AuthenticationFailedException, AuthorizationFailedException, UserNotFoundException {
 

@@ -16,6 +16,7 @@ public class AnswerDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    //Get all answer of a specific question
     public List<AnswerEntity> getAnswerByQuestionId(final String questionUuid) {
         try {
             return entityManager.createNamedQuery("answerByQuestionId", AnswerEntity.class).setParameter("quuid", questionUuid)
@@ -25,6 +26,7 @@ public class AnswerDao {
         }
     }
 
+    //Get answer of a specific answer uuid
     public AnswerEntity getAnswerById(final String answerUuid) {
         try {
             return entityManager.createNamedQuery("answerById", AnswerEntity.class).setParameter("uuid", answerUuid)
@@ -34,21 +36,21 @@ public class AnswerDao {
         }
     }
 
-    //Create answer
+    //Create answer in database
     @Transactional(propagation = Propagation.REQUIRED)
     public AnswerEntity createAnswer(AnswerEntity answerEntity){
         entityManager.persist(answerEntity);
         return answerEntity;
     }
 
-    //update answer
+    //update answer in database
     @Transactional(propagation = Propagation.REQUIRED)
     public  AnswerEntity updateAnswer(AnswerEntity answerEntity){
         entityManager.merge(answerEntity);
         return answerEntity;
     }
 
-    //delete answer
+    //delete answer in database
     @Transactional(propagation = Propagation.REQUIRED)
     public AnswerEntity deleteAnswer(AnswerEntity answerEntity) {
         entityManager.remove(answerEntity);

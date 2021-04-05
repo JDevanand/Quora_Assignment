@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.business;
 
+import com.upgrad.quora.service.dao.UserAuthDao;
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
@@ -18,8 +19,14 @@ public class AuthenticationService {
     private UserDao userDao;
 
     @Autowired
+    private UserAuthDao userAuthDao;
+
+    @Autowired
     private PasswordCryptographyProvider cryptographyProvider;
 
+    //Authenticate user based on the basic authorization provided by user
+    //and return AccessToken if authorization is successful
+    //if not successful, throw AuthenticationFailedException.
     public UserAuthTokenEntity authenticate(final String authorization) throws AuthenticationFailedException {
 
         //Basic dXNlcjFAZW1haWwuY29tOnVzZXIxIQ==
@@ -52,7 +59,7 @@ public class AuthenticationService {
             userAuthToken.setLoginAt(now);
             userAuthToken.setExpiresAt(expiresAt);
 
-            userDao.createAuthToken(userAuthToken);
+            userAuthDao.createAuthToken(userAuthToken);
 
             return userAuthToken;
         } else {

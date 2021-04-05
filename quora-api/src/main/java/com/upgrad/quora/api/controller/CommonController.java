@@ -17,12 +17,13 @@ public class CommonController {
     @Autowired
     private CommonBusinessService commonBusinessService;
 
+    //Get details of a user end point
     @RequestMapping(path="/userprofile/{userId}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserEntity> getUserProfile (@PathVariable("userId") final String userUuid, @RequestHeader("authorization") final String accessToken) throws AuthorizationFailedException, UserNotFoundException {
 
         UserEntity userEntity = commonBusinessService.getUser(userUuid,accessToken);
 
-        return new ResponseEntity<UserEntity>(userEntity, HttpStatus.FOUND);
+        return new ResponseEntity<UserEntity>(userEntity, HttpStatus.OK);
     }
 
 }
