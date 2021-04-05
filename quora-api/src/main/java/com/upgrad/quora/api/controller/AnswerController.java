@@ -2,10 +2,7 @@ package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.AnswerBusinessService;
-import com.upgrad.quora.service.business.AuthenticationService;
-import com.upgrad.quora.service.business.QuestionBusinessService;
 import com.upgrad.quora.service.entity.AnswerEntity;
-import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
@@ -25,12 +22,6 @@ public class AnswerController {
 
     @Autowired
     private AnswerBusinessService answerBusinessService;
-
-    @Autowired
-    private QuestionBusinessService questionBusinessService;
-
-    @Autowired
-    private AuthenticationService authenticationService;
 
     //Create answer
     @RequestMapping(path ="/question/{questionId}/answer/create",method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -74,14 +65,13 @@ public class AnswerController {
 
     //All the answer to a question
     @RequestMapping(path="/answer/all/{questionId}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<AnswerDetailsResponse> getAllAnswerToQuestion(@PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String authorization) throws AuthenticationFailedException {
+    public ResponseEntity<AnswerDetailsResponse> getAllAnswerToQuestion(@PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
 
-        UserAuthTokenEntity userAuthToken = authenticationService.authenticate(authorization);
-
-        List<AnswerEntity> answerEntityList = answerBusinessService.getAnswerByQuestionId(questionUuid);
+        List<AnswerEntity> answerEntityList = answerBusinessService.getAnswerByQuestionId(accessToken, questionUuid);
 
         AnswerDetailsResponse answerDetailsResponse = new AnswerDetailsResponse();
-        //answerDetailsResponse.setAnswerContent();
+        //answerDetailsResponse.setAnswerContent(answerEntityList);
+
 
         return  new ResponseEntity<>(answerDetailsResponse, HttpStatus.OK);
     }

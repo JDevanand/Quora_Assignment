@@ -19,7 +19,6 @@ public class RestExceptionHandler {
         );
     }
 
-
     @ExceptionHandler(AuthenticationFailedException.class)
     public ResponseEntity<ErrorResponse> authenticationFailedException(AuthenticationFailedException exe, WebRequest request){
 

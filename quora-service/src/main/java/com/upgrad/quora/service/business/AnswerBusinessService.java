@@ -31,9 +31,23 @@ public class AnswerBusinessService {
     @Autowired
     private QuestionDao questionDao;
 
-    public List<AnswerEntity> getAnswerByQuestionId(final String questionUuid) {
+    //Get all answers to a question
+    public List<AnswerEntity> getAnswerByQuestionId(final String accessToken, String questionUuid) throws AuthorizationFailedException, InvalidQuestionException {
 
-        return answerDao.getAnswerByQuestionId(questionUuid);//to be changed to list of question entities
+        UserAuthTokenEntity loggedUserAuthTokenEntity = userDao.getUserAuthToken(accessToken);
+        if(loggedUserAuthTokenEntity ==null){
+            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
+        }
+        if(loggedUserAuthTokenEntity.getLogoutAt()!=null || (loggedUserAuthTokenEntity.getExpiresAt().compareTo(now())<0)){
+            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get the answers");
+        }
+
+        QuestionEntity questionEntity= questionDao.getQuestionByQuestionId(questionUuid);
+        if(questionEntity==null) {
+            throw new InvalidQuestionException("QUES-001", "The question with entered uuid whose details are to be seen does not exist");
+        }
+
+        return answerDao.getAnswerByQuestionId(questionUuid);
     }
 
     public AnswerEntity getAnswerById(final String answerUuid){
@@ -94,6 +108,7 @@ public class AnswerBusinessService {
         return answerDao.updateAnswer(answerEntityToBeUpdated);
     }
 
+    //delete answer
     public AnswerEntity deleteAnswer(String accessToken, String answerUuid) throws AuthorizationFailedException, AnswerNotFoundException {
         UserAuthTokenEntity loggedUserAuthTokenEntity = userDao.getUserAuthToken(accessToken);
 
